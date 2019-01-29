@@ -21,10 +21,12 @@ $(document).ready(function () {
 
         var trainName = $("#train-name").val().trim();
         var destination = $("#destination").val().trim();
-        var firstTrain = $("#first-train").val().trim();
+        var firstTrainHr = $("#first-trainhr").val().trim();
+        var firstTrainMin = $("#first-trainmin").val().trim();
+        var firstTrain = firstTrainHr.toString() + ":" + firstTrainMin.toString();
         var frequency = $("#frequency").val().trim();
-        var firstTrainms = moment(firstTrain,"HH:mm");
-        var nowTimems = moment(new Date());
+        // var firstTrainms = moment(firstTrain,"HH:mm");
+        // var nowTimems = moment(new Date());
 
         var newTrainObj ={
             name : trainName,
@@ -39,7 +41,8 @@ $(document).ready(function () {
 
         $("#train-name").val("");
         $("#destination").val("");
-        $("#first-train").val("");
+        $("#first-trainhr").val("");
+        $("#first-trainmin").val("");
         $("#frequency").val("");
 
     });
@@ -94,7 +97,7 @@ $(document).ready(function () {
         frequencyDisplayVar.text(rowAdded.val().freq);
 
         
-        var nextArrivalTime;
+        // var nextArrivalTime;
         var nextArrivalNoForm;
         
         var firstTime = moment(rowAdded.val().firstHour,"HH:mm");
@@ -121,7 +124,7 @@ $(document).ready(function () {
             nextArrivalNoForm = moment(timesArray[j],"x");
             minutesAway = Math.floor((timesArray[j]-nowTime)/60000)+1;
         }
-        nextArrivalTime = moment(nextArrivalNoForm).format("dddd, MMMM Do YYYY, h:mm");
+        nextArrivalTime = moment(nextArrivalNoForm).format("dddd, MMMM Do YYYY, h:mm a");
         
        
 
