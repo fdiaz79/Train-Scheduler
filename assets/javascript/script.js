@@ -7,13 +7,15 @@ $(document).ready(function () {
         projectId: "trainscheduler-8946c",
         storageBucket: "trainscheduler-8946c.appspot.com",
         messagingSenderId: "602135794729"
-      };
-      firebase.initializeApp(config);
+    };
+    firebase.initializeApp(config);
 
-      var database = firebase.database();
+    var database = firebase.database(); 
 
+    
 
     //capturing Info ();
+    
     $("#submit-button").on("click", function(event) {
         event.preventDefault();
 
@@ -21,6 +23,8 @@ $(document).ready(function () {
         var destination = $("#destination").val().trim();
         var firstTrain = $("#first-train").val().trim();
         var frequency = $("#frequency").val().trim();
+        var firstTrainms = moment(firstTrain,"HH:mm");
+        var nowTimems = moment(new Date());
 
         var newTrainObj ={
             name : trainName,
@@ -42,17 +46,26 @@ $(document).ready(function () {
 
     database.ref().on("child_added", function(rowAdded) {
         console.log(rowAdded.val());
-        var nextArrivalTime = "function calcTime";
+
+        
+        var firstTrainms = moment(rowAdded.val().firstHour,"HH:mm");
+        
+        var nextArrivalTimems = nextArrFunction(firstTrainms, rowAdded.val().freq);
+        var nextArrivalTime = moment(nextArrivalTimems, "HH:mm");
+
         var minutesAway = "nextArrivalTime - currentTime(mins)";
 
+        //edit button
         var editIcon = $("<i>");
         editIcon.addClass("fa fa-pencil");
         editIcon.attr("aria-hidden", "true");
 
+        // delete button
         var delIcon = $("<i>");
         delIcon.addClass("fa fa-trash");
         delIcon.attr("aria-hidden", "true");
 
+        // rendering the table information
         var rowEditVar = $("<tr>");
         rowEditVar.addClass("d-flex");
 
@@ -79,6 +92,39 @@ $(document).ready(function () {
         var frequencyDisplayVar = $("<td>");
         frequencyDisplayVar.addClass("col-2 text-center");
         frequencyDisplayVar.text(rowAdded.val().freq);
+
+        
+        var nextArrivalTime;
+        var nextArrivalNoForm;
+        
+        var firstTime = moment(rowAdded.val().firstHour,"HH:mm");
+    
+        var nowTime = moment(new Date());
+        var timesArray=[];
+        frqms = rowAdded.val().freq * 60000; //freq in miliseconds
+        
+        var j = 0;
+        var compareTime = firstTime;
+       
+        while (nowTime > compareTime){
+            j++;
+            compareTime = firstTime + (j*frqms);
+            timesArray.push(compareTime);
+        }
+        if (nowTime<=firstTime){
+            nextArrivalNoForm = firstTime;
+            console.log(firstTime +"|"+ nowTime);
+            minutesAway = Math.floor((firstTime-nowTime)/60000)+1;
+        }
+        else{
+            j--;
+            nextArrivalNoForm = moment(timesArray[j],"x");
+            minutesAway = Math.floor((timesArray[j]-nowTime)/60000)+1;
+        }
+        nextArrivalTime = moment(nextArrivalNoForm).format("dddd, MMMM Do YYYY, h:mm");
+        
+       
+
 
         var nextArrivalEditVar = $("<td>");
         nextArrivalEditVar.addClass("col-2 text-center");
@@ -112,7 +158,18 @@ $(document).ready(function () {
     });
     
 
-    function displayInfo () {
+    function nextArrFunction (firstTime,q) {
+        var nextArrival;
+        var nowTime = moment().format("hh:mm");
+        var x = 0;
+        var compareTime = firstTime
+        while (nowTime > compareTime){
+            x++;
+            compareTime = firstTime + (x*q);
+        }
+        x--
+        nextArrival = firstTime + (x*q);
+        return nextArrival;
 
     };
 
