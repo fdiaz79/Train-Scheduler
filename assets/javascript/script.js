@@ -19,34 +19,42 @@ $(document).ready(function () {
     $("#submit-button").on("click", function(event) {
         event.preventDefault();
 
-        var trainName = $("#train-name").val().trim();
-        var destination = $("#destination").val().trim();
-        var firstTrainHr = $("#first-trainhr").val().trim();
-        var firstTrainMin = $("#first-trainmin").val().trim();
-        var firstTrain = firstTrainHr.toString() + ":" + firstTrainMin.toString();
-        var frequency = $("#frequency").val().trim();
-        // var firstTrainms = moment(firstTrain,"HH:mm");
-        // var nowTimems = moment(new Date());
+        var formValidation = $("form")[0];
+        var validator =formValidation.checkValidity();
+        formValidation.reportValidity();
+        
+        if (validator){
+            var trainName = $("#train-name").val().trim();
+            var destination = $("#destination").val().trim();
+            var firstTrainHr = $("#first-trainhr").val().trim();
+            var firstTrainMin = $("#first-trainmin").val().trim();
+            var firstTrain = firstTrainHr.toString() + ":" + firstTrainMin.toString();
+            var frequency = $("#frequency").val().trim();
+            
 
-        var newTrainObj ={
-            name : trainName,
-            dest : destination,
-            firstHour : firstTrain,
-            freq : frequency
-        };
+            var newTrainObj ={
+                name : trainName,
+                dest : destination,
+                firstHour : firstTrain,
+                freq : frequency
+            };
 
-        database.ref().push(newTrainObj);
+            database.ref().push(newTrainObj);
 
-        console.log(newTrainObj.name+ " | " + newTrainObj.dest+ " | " + newTrainObj.firstHour+ " | " + newTrainObj.freq);
+         
 
-        $("#train-name").val("");
-        $("#destination").val("");
-        $("#first-trainhr").val("");
-        $("#first-trainmin").val("");
-        $("#frequency").val("");
+            $("#train-name").val("");
+            $("#destination").val("");
+            $("#first-trainhr").val("");
+            $("#first-trainmin").val("");
+            $("#frequency").val("");
+        } else{
+            return false;
+        }
 
     });
 
+    //rendering the train informnation
     database.ref().on("child_added", function(rowAdded) {
         console.log(rowAdded.val());
 
@@ -116,7 +124,7 @@ $(document).ready(function () {
         }
         if (nowTime<=firstTime){
             nextArrivalNoForm = firstTime;
-            console.log(firstTime +"|"+ nowTime);
+            
             minutesAway = Math.floor((firstTime-nowTime)/60000)+1;
         }
         else{
@@ -160,7 +168,7 @@ $(document).ready(function () {
 
     });
     
-
+    //calculates the next arrival time no format
     function nextArrFunction (firstTime,q) {
         var nextArrival;
         var nowTime = moment().format("hh:mm");
