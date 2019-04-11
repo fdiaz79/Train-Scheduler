@@ -12,6 +12,4 @@ Everytime the page is loaded or a new train information is entered, the informat
 
 Like I said before, in the future the option of editing and deleting will be added, also the display refresh every minute.
 
-
-
-
+Hop on here... https://fdiaz79.github.io/Train-Scheduler/
